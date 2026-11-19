@@ -16,3 +16,30 @@
 - 👤 [Explore the creator's projects](https://go.ondev.store/callumd-spike).
 - 🌍 [Create with OMGithub](https://go.ondev.store/).
 <!-- omgithub:readme:end -->
+
+## Lemmy: Tailspin Showdown
+
+A complete, playable pixel-art fighting game starring **Lemmy the lemur** in his level 1 bout against **Bramble the boar**. No build step or external services are required: open `index.html` or serve the folder with any static file server.
+
+- 640×360 forest arena with animated pixel scenery, HUD, combo meter, and a three-round match.
+- Punch, kick, guard, jump, dash, and a screen-clearing **Fury** tailspin.
+- Keyboard controls plus a touch cabinet layout for phones and tablets.
+- Title, pause, round announcements, K.O. moments, and a ranked match-result screen.
+- Local pixel font, Lemmy favicon, synthesized music, and sound effects.
+
+### Controls
+
+| Action | Keyboard | Touch |
+| --- | --- | --- |
+| Move | `A` / `D` or arrows | ◀ / ▶ |
+| Jump | `W`, `↑`, or `Space` | JUMP |
+| Punch | `J` | PUNCH |
+| Kick | `K` | KICK |
+| Guard | `L` | GUARD |
+| Fury | `U` (full meter) | FURY |
+| Dash | `Shift` or double-tap a direction | Double-tap ◀ / ▶ |
+| Pause | `Esc` or `P` | PAUSE / II |
+| Mute | `M` | SOUND / SFX |
+
+Best combo is stored locally in the browser.
+

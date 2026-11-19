@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#120f1e">
+  <meta name="description" content="Lemmy: Tailspin Showdown — a pixel fighting game starring Lemmy the lemur, level 1.">
+  <title>Lemmy: Tailspin Showdown</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <div class="brand" aria-label="Forest Fight Club">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-name">FOREST FIGHT CLUB</span>
+        <span class="brand-vol">VOL. 01</span>
+      </div>
+      <div class="tools">
+        <button class="icon-btn" id="muteBtn" type="button" aria-pressed="false" title="Toggle sound (M)">SOUND ON</button>
+        <button class="icon-btn" id="pauseBtn" type="button" title="Pause (Esc)">PAUSE</button>
+      </div>
+    </header>
+
+    <main class="stage">
+      <div class="game-frame" id="gameFrame">
+        <canvas id="game" width="640" height="360" aria-label="Lemmy: Tailspin Showdown game screen">
+          Lemmy the lemur versus Bramble the boar. A pixel fighting game.
+        </canvas>
+        <div class="screen-fx" aria-hidden="true"></div>
+        <div class="frame-stamp" aria-hidden="true">1P</div>
+
+        <div class="quick-tools is-hidden" id="quickTools" aria-label="Quick controls">
+          <button class="quick-btn" id="quickPause" type="button" aria-label="Pause">II</button>
+          <button class="quick-btn" id="quickMute" type="button" aria-label="Toggle sound" aria-pressed="false">SFX</button>
+        </div>
+
+        <div class="hud is-hidden" id="hud" aria-hidden="true">
+          <div class="hud-side hud-left">
+            <div class="hud-name">
+              <span class="player-tag">1P</span>
+              <span class="fighter-name">LEMMY</span>
+              <span class="fighter-lv">LV.1</span>
+            </div>
+            <div class="health-shell">
+              <div class="health-lag" id="playerLag"></div>
+              <div class="health-fill" id="playerHealth"></div>
+              <div class="health-grid"></div>
+            </div>
+            <div class="sub-row">
+              <span class="meter-label">FURY</span>
+              <div class="meter-track"><div class="meter-fill" id="playerMeter"></div></div>
+              <span class="meter-ready" id="playerReady">READY</span>
+              <div class="round-pips" id="playerPips"><i></i><i></i></div>
+            </div>
+          </div>
+
+          <div class="hud-center">
+            <div class="round-readout" id="roundReadout">ROUND 1</div>
+            <div class="timer-shell"><span id="timerText">60</span></div>
+          </div>
+
+          <div class="hud-side hud-right">
+            <div class="hud-name">
+              <span class="enemy-tag">CPU</span>
+              <span class="fighter-name">BRAMBLE</span>
+              <span class="fighter-lv">BOSS</span>
+            </div>
+            <div class="health-shell">
+              <div class="health-lag" id="enemyLag"></div>
+              <div class="health-fill" id="enemyHealth"></div>
+              <div class="health-grid"></div>
+            </div>
+            <div class="sub-row">
+              <div class="round-pips" id="enemyPips"><i></i><i></i></div>
+              <span class="meter-label enemy-meter-label">RAGE</span>
+              <div class="meter-track"><div class="meter-fill enemy-meter-fill" id="enemyMeter"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="announce" id="announce" aria-live="polite"><span id="announceText"></span></div>
+
+        <div class="combo combo-left" id="playerCombo" aria-hidden="true"><strong>0</strong><span>HIT COMBO</span></div>
+        <div class="combo combo-right" id="enemyCombo" aria-hidden="true"><strong>0</strong><span>HIT COMBO</span></div>
+
+        <section class="overlay title-screen" id="titleScreen" aria-label="Title screen">
+          <div class="title-copy">
+            <div class="eyebrow"><span class="status-dot"></span>CHARACTER 01 <span class="slash">//</span> LEVEL 1</div>
+            <h1 class="logo">
+              <span class="logo-name">LEMMY</span>
+              <span class="logo-sub">TAILSPIN<br>SHOWDOWN</span>
+            </h1>
+            <p class="tagline">A ring-tailed rumbler versus the bramble boss.</p>
+            <div class="title-actions">
+              <button class="start-btn" id="startBtn" type="button">
+                <span class="start-main">ENTER THE RING</span>
+                <span class="start-sub">PRESS ENTER / TAP</span>
+              </button>
+              <div class="best-line">BEST COMBO <span id="bestCombo">0</span></div>
+            </div>
+          </div>
+
+          <aside class="fighter-card" aria-label="Fighter file: Lemmy">
+            <div class="card-head"><span>FIGHTER FILE</span><span>#001</span></div>
+            <div class="card-body">
+              <canvas id="portrait" width="84" height="84" aria-hidden="true"></canvas>
+              <div class="card-id">
+                <h2>LEMMY</h2>
+                <p>THE LEMUR</p>
+                <span class="level-pill">LV. 1</span>
+              </div>
+            </div>
+            <div class="stat-list">
+              <div class="stat-row"><span>PWR</span><div class="stat-track"><i style="width:56%"></i></div></div>
+              <div class="stat-row"><span>SPD</span><div class="stat-track"><i style="width:82%"></i></div></div>
+              <div class="stat-row"><span>TAIL</span><div class="stat-track"><i style="width:96%"></i></div></div>
+            </div>
+            <p class="card-note">“Small tail. Big trouble.”</p>
+          </aside>
+
+          <div class="title-footer" aria-hidden="true">
+            <span><b>A/D</b> MOVE</span><span><b>W</b> JUMP</span><span><b>J</b> PUNCH</span><span><b>K</b> KICK</span><span><b>L</b> GUARD</span><span><b>U</b> FURY</span>
+          </div>
+        </section>
+
+        <section class="overlay panel-screen is-hidden" id="pauseScreen" aria-label="Paused">
+          <div class="panel">
+            <p class="eyebrow">MATCH PAUSED</p>
+            <h2>TAKE A BREATH</h2>
+            <p class="panel-copy">The forest can wait.</p>
+            <div class="panel-actions">
+              <button class="pixel-btn primary" id="resumeBtn" type="button">RESUME</button>
+              <button class="pixel-btn" id="quitBtn" type="button">QUIT TO TITLE</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="overlay panel-screen is-hidden" id="resultScreen" aria-label="Match results">
+          <div class="result-panel">
+            <div class="result-kicker" id="resultKicker">LEVEL 1 CLEAR</div>
+            <h2 id="resultTitle">VICTORY</h2>
+            <div class="rank-row"><span class="rank-label">RANK</span><span class="rank" id="resultRank">A</span></div>
+            <div class="result-stats">
+              <div><span>ROUNDS</span><strong id="resultRounds">2-0</strong></div>
+              <div><span>MAX COMBO</span><strong id="resultCombo">0</strong></div>
+              <div><span>DAMAGE</span><strong id="resultDamage">0</strong></div>
+              <div><span>TIME</span><strong id="resultTime">0:00</strong></div>
+            </div>
+            <p class="result-line" id="resultLine">The tail has spoken.</p>
+            <div class="panel-actions">
+              <button class="pixel-btn primary" id="rematchBtn" type="button">REMATCH</button>
+              <button class="pixel-btn" id="titleBtn" type="button">TITLE SCREEN</button>
+            </div>
+          </div>
+        </section>
+
+        <div class="controls-hint" id="controlsHint" aria-hidden="true">
+          <span><b>A/D</b> MOVE</span><span><b>W</b> JUMP</span><span><b>J</b> PUNCH</span><span><b>K</b> KICK</span><span><b>L</b> GUARD</span>
+        </div>
+
+        <div class="touch-controls is-hidden" id="touchControls" aria-label="Touch controls">
+          <div class="touch-pad">
+            <button class="touch-btn direction" type="button" data-act="left" aria-label="Move left">◀</button>
+            <button class="touch-btn direction" type="button" data-act="right" aria-label="Move right">▶</button>
+          </div>
+          <div class="touch-actions">
+            <button class="touch-btn small" type="button" data-act="guard" aria-label="Guard">GUARD</button>
+            <button class="touch-btn" type="button" data-act="punch" aria-label="Punch">PUNCH</button>
+            <button class="touch-btn" type="button" data-act="kick" aria-label="Kick">KICK</button>
+            <button class="touch-btn" type="button" data-act="jump" aria-label="Jump">JUMP</button>
+            <button class="touch-btn fury" type="button" data-act="special" aria-label="Fury attack">FURY</button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="portrait-deck" aria-label="Fight card">
+        <div class="deck-head">
+          <div class="deck-fighter">
+            <span class="deck-tag">1P</span>
+            <strong>LEMMY</strong>
+            <em>LV.1</em>
+          </div>
+          <span class="deck-vs">VS</span>
+          <div class="deck-fighter deck-foe">
+            <em>BOSS</em>
+            <strong>BRAMBLE</strong>
+            <span class="deck-tag foe">CPU</span>
+          </div>
+        </div>
+        <div class="deck-moves">
+          <span><b>PUNCH</b>QUICK POKE</span>
+          <span><b>KICK</b>LONG REACH</span>
+          <span><b>GUARD</b>BLOCK SWIPES</span>
+          <span><b>FURY</b>FULL METER</span>
+        </div>
+        <p class="deck-tip">Land hits to fill FURY, then unleash the tailspin. First to two rounds wins.</p>
+      </aside>
+    </main>
+
+    <footer class="underbar">
+      <div class="legend">
+        <span><b>A / D</b> MOVE</span>
+        <span><b>W / ↑</b> JUMP</span>
+        <span><b>J</b> PUNCH</span>
+        <span><b>K</b> KICK</span>
+        <span><b>L</b> GUARD</span>
+        <span><b>U</b> FURY</span>
+        <span><b>SHIFT</b> DASH</span>
+        <span><b>ESC</b> PAUSE</span>
+      </div>
+      <div class="credit">A TINY FIGHTING GAME · 640×360 · MADE WITH PIXELS</div>
+    </footer>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
