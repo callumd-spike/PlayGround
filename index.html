@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a0714">
+<title>Critter Clash — Pixel Fighting Game</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230a0714'/%3E%3Cpath d='M8 2l2 4 4 1-3 3 1 4-4-2-4 2 1-4-3-3 4-1z' fill='%23ffe36e'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="shell">
+    <canvas id="game" width="480" height="270" aria-label="Critter Clash pixel fighting game"></canvas>
+
+    <div id="touch-controls" aria-hidden="true">
+      <div class="dpad">
+        <button class="tbtn dp up" data-key="up" aria-label="Jump">&#9650;</button>
+        <button class="tbtn dp left" data-key="left" aria-label="Move left">&#9664;</button>
+        <button class="tbtn dp right" data-key="right" aria-label="Move right">&#9654;</button>
+        <button class="tbtn dp down" data-key="down" aria-label="Crouch">&#9660;</button>
+      </div>
+      <button id="pause-touch" class="tbtn pause" aria-label="Pause">II</button>
+      <button id="mute-btn" class="tbtn mute" aria-label="Toggle sound">SOUND ON</button>
+      <div class="actions">
+        <button class="tbtn act punch" data-key="punch">PUNCH</button>
+        <button class="tbtn act kick" data-key="kick">KICK</button>
+        <button class="tbtn act block" data-key="block">BLOCK</button>
+        <button class="tbtn act special" data-key="special">SPECIAL</button>
+      </div>
+    </div>
+
+    <div id="rotate-hint">&#8635; ROTATE FOR A BIGGER ARENA</div>
+  </div>
+  <noscript>Critter Clash needs JavaScript enabled.</noscript>
+  <script type="module" src="js/game.js"></script>
+</body>
+</html>
