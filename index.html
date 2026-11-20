@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>Clayword Quest</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=DM+Mono:wght@500&display=swap');
+:root{--ink:#262524;--cream:#fff7df;--pink:#ff8c99;--yellow:#ffd66b;--mint:#72ccb1}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#c7e6d6;font-family:Fredoka,system-ui,sans-serif;color:var(--ink);touch-action:none}
+canvas{display:block;width:100%;height:100%;outline:none}
+#ui{position:absolute;inset:0;pointer-events:none}button,input{font:inherit}.panel{position:absolute;pointer-events:auto}
+#creator{inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 38%,rgba(255,255,255,.38),transparent 35%),linear-gradient(155deg,#9ed7c2 0%,#72b89f 100%);transition:.35s}
+#creator.hide{opacity:0;transform:scale(1.04);pointer-events:none}
+.card{width:min(470px,calc(100% - 36px));text-align:center;padding:20px 30px 26px;background:rgba(255,249,224,.94);border:5px solid #2e3030;border-radius:30px;box-shadow:0 13px 0 rgba(45,54,49,.18),0 22px 35px rgba(45,54,49,.12);transform:rotate(-1deg)}
+.logo{margin:0;font-size:clamp(38px,7vw,68px);line-height:.92;letter-spacing:-3px;text-shadow:0 4px 0 #fff}.logo em{font-style:normal;color:#ef6d7b}.tag{font-size:15px;text-transform:uppercase;letter-spacing:2.5px;margin:12px 0 22px;color:#697268}
+#word{width:100%;height:70px;border:4px solid var(--ink);border-radius:19px;background:#fffdf5;text-align:center;font-size:34px;font-weight:700;color:var(--ink);outline:none;box-shadow:inset 0 -7px 0 #eee8cf}#word:focus{border-color:#d65f70}
+#play{width:100%;margin-top:12px;height:66px;border:4px solid var(--ink);border-radius:18px;background:var(--pink);color:#fff;font-size:24px;font-weight:700;box-shadow:0 8px 0 #a84d59;cursor:pointer;transform:rotate(.5deg)}#play:active{transform:translateY(6px);box-shadow:0 2px 0 #a84d59}
+.hint{margin:14px 0 0;font-size:12px;color:#73766d}.hint kbd{font-family:DM Mono;background:#e7dfc6;border:1px solid #aaa;border-radius:5px;padding:2px 5px}
+#hud{position:absolute;left:18px;right:18px;top:14px;display:flex;justify-content:space-between;align-items:flex-start;opacity:0;transition:.3s}#hud.show{opacity:1}
+#nameTag,#coinTag{background:rgba(255,249,224,.93);border:3px solid var(--ink);border-radius:14px;padding:8px 13px;font-weight:700;box-shadow:0 5px 0 rgba(45,54,49,.13)}#nameTag{transform:rotate(-2deg)}#coinTag{font-size:18px;transform:rotate(2deg)}
+#mobile{display:none;position:absolute;left:20px;right:20px;bottom:18px;justify-content:space-between}.moveGroup{display:flex;gap:10px}.touch{pointer-events:auto;width:68px;height:68px;border:3px solid var(--ink);border-radius:22px;background:rgba(255,249,224,.82);font-size:29px;font-weight:700;box-shadow:0 6px 0 rgba(45,54,49,.15);color:var(--ink)}.touch:active{transform:translateY(5px);box-shadow:0 1px 0 rgba(45,54,49,.15)}
+#toast{position:absolute;left:50%;top:20%;transform:translate(-50%,-20px);background:#fff7df;border:3px solid var(--ink);border-radius:14px;padding:9px 16px;font-weight:700;opacity:0;transition:.25s;white-space:nowrap}#toast.show{opacity:1;transform:translate(-50%,0)}
+#finish{inset:0;display:flex;align-items:center;justify-content:center;background:rgba(64,101,88,.25);opacity:0;pointer-events:none;transition:.25s}#finish.show{opacity:1;pointer-events:auto}.finishCard{width:min(400px,calc(100% - 32px));padding:25px;text-align:center;border:5px solid var(--ink);border-radius:28px;background:#fff7df;box-shadow:0 12px 0 rgba(45,54,49,.16);transform:rotate(-1deg)}.finishCard h2{font-size:48px;margin:0}.finishCard p{margin:8px 0 18px}.finishCard button{height:56px;border:3px solid var(--ink);border-radius:16px;background:#72ccb1;font-weight:700;font-size:20px;padding:0 22px;box-shadow:0 6px 0 #3e8f78;pointer-events:auto}
+@media(pointer:coarse),(max-width:700px){#mobile{display:flex}.hint{display:none}.card{padding:14px 20px 20px}.tag{margin:8px 0 14px}}
+</style>
+</head>
+<body>
+<canvas id="game" tabindex="0"></canvas>
+<div id="ui">
+  <div id="creator"><div class="card"><h1 class="logo">CLAY<em>WORD</em><br>QUEST</h1><div class="tag">Name your little adventurer</div><input id="word" maxlength="10" autocomplete="off" placeholder="TYPE ANYTHING" aria-label="Character name"><button id="play">START SCULPTING</button><p class="hint"><kbd>A</kbd> <kbd>D</kbd> move &nbsp; <kbd>W</kbd> / <kbd>SPACE</kbd> jump</p></div></div>
+  <div id="hud"><div id="nameTag">● <span id="name">WORD</span></div><div id="coinTag">★ <span id="score">0</span> / 8</div></div>
+  <div id="toast">Nicely squished!</div>
+  <div id="finish"><div class="finishCard"><h2>Sculptacular!</h2><p id="finishText"></p><button id="again">PLAY AGAIN</button></div></div>
+  <div id="mobile"><div class="moveGroup"><button class="touch" id="left" aria-label="Move left">◀</button><button class="touch" id="right" aria-label="Move right">▶</button></div><button class="touch" id="jump" aria-label="Jump">▲</button></div>
+</div>
+<script>
+const canvas=document.querySelector('#game'),ctx=canvas.getContext('2d');let W,H,DPR;
+function resize(){DPR=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;canvas.width=W*DPR;canvas.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0)}addEventListener('resize',resize);resize();
+const keys={};addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if([' ','arrowup','arrowleft','arrowright'].includes(e.key.toLowerCase()))e.preventDefault()});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+let world={scale:1,cam:0,score:0,won:false,start:false};
+const platforms=[{x:-180,y:430,w:390,h:60},{x:260,y:370,w:180,h:55},{x:500,y:300,w:170,h:55},{x:720,y:380,w:150,h:55},{x:930,y:310,w:220,h:55},{x:1190,y:390,w:180,h:55},{x:1430,y:330,w:220,h:55},{x:1700,y:270,w:180,h:55},{x:1920,y:350,w:360,h:70},{x:2320,y:280,w:220,h:55},{x:2580,y:350,w:430,h:70}];
+const gems=[{x:280,y:320},{x:530,y:250},{x:750,y:330},{x:980,y:260},{x:1230,y:340},{x:1480,y:280},{x:1740,y:220},{x:2420,y:230},{x:2680,y:300},{x:2820,y:300}].slice(0,8);
+let player={x:20,y:340,vx:0,vy:0,w:54,h:68,name:'BLOB',ground:false,ang:0,squash:0};
+function rounded(x,y,w,h,r,c){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=c;ctx.fill();ctx.strokeStyle='#353735';ctx.lineWidth=4;ctx.stroke()}
+function textBlob(){ctx.save();ctx.translate(player.x-world.cam,player.y);ctx.rotate(player.ang);const s=player.squash?1-player.squash*.12:1;ctx.scale(s,2-s);ctx.beginPath();ctx.moveTo(-23,26);ctx.bezierCurveTo(-30,-3,-23,-31,-5,-36);ctx.bezierCurveTo(15,-42,29,-23,27,2);ctx.bezierCurveTo(31,28,18,35,-5,34);ctx.bezierCurveTo(-14,36,-21,34,-23,26);ctx.fillStyle='#f58b99';ctx.fill();ctx.strokeStyle='#343633';ctx.lineWidth=4;ctx.stroke();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(-9,-6,8,0,7);ctx.arc(10,-6,8,0,7);ctx.fill();ctx.fillStyle='#343633';ctx.beginPath();ctx.arc(-7,-5,3,0,7);ctx.arc(12,-5,3,0,7);ctx.fill();ctx.strokeStyle='#343633';ctx.lineWidth=3;ctx.beginPath();ctx.arc(2,8,8,.15,Math.PI-.15);ctx.stroke();ctx.restore()}
+function grassPlatform(p){ctx.fillStyle='rgba(55,75,65,.12)';ctx.beginPath();ctx.ellipse(p.x+p.w/2-world.cam,p.y+p.h+18,p.w*.48,14,0,0,7);ctx.fill();ctx.fillStyle='#7bbb86';ctx.fillRect(p.x-world.cam,p.y,p.w,p.h);ctx.strokeStyle='#343633';ctx.lineWidth=4;ctx.strokeRect(p.x-world.cam,p.y,p.w,p.h);ctx.fillStyle='#addb91';ctx.fillRect(p.x-world.cam,p.y,p.w,13);ctx.fillStyle='rgba(255,255,255,.18)';for(let x=p.x+18;x<p.x+p.w;x+=35)ctx.beginPath(),ctx.arc(x-world.cam,p.y+27,5,0,7),ctx.fill()}
+function gem(g,i){if(g.taken)return;let y=g.y+Math.sin(performance.now()/350+i)*6,x=g.x-world.cam;ctx.save();ctx.translate(x,y);ctx.rotate(performance.now()/900+i);ctx.beginPath();ctx.moveTo(0,-19);ctx.lineTo(16,-5);ctx.lineTo(10,15);ctx.lineTo(-10,15);ctx.lineTo(-16,-5);ctx.closePath();ctx.fillStyle='#ffd66b';ctx.fill();ctx.strokeStyle='#343633';ctx.lineWidth=4;ctx.stroke();ctx.beginPath();ctx.moveTo(-16,-5);ctx.lineTo(16,-5);ctx.moveTo(0,-19);ctx.lineTo(0,15);ctx.stroke();ctx.restore();}
+function drawBackground(){let grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,'#acdcd0');grad.addColorStop(1,'#dce8c2');ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);ctx.fillStyle='#93bea8';for(let i=-1;i<8;i++){let x=i*260-world.cam*.18%260-80;ctx.beginPath();ctx.moveTo(x,H*.55);ctx.quadraticCurveTo(x+55,H*.25,x+130,H*.55);ctx.quadraticCurveTo(x+210,H*.15,x+300,H*.55);ctx.fill()}ctx.fillStyle='#c1dca9';ctx.beginPath();ctx.moveTo(0,H*.68);for(let x=-100;x<W+100;x+=70){ctx.quadraticCurveTo(x+35,H*.58,x+70,H*.68)}ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.fill();}
+function physics(){if(!world.start)return;if(keys.a||keys.arrowleft)player.vx-=.8;if(keys.d||keys.arrowright)player.vx+=.8;if((keys.w||keys[' ']||keys.arrowup)&&player.ground){player.vy=-13;player.ground=false;player.squash=.8}player.vx*=.82;player.vx=Math.max(-7,Math.min(7,player.vx));player.vy+=.65;player.x+=player.vx;player.y+=player.vy;player.ground=false;for(const p of platforms){if(player.x+22>p.x&&player.x-22<p.x+p.w&&player.y+34>=p.y&&player.y+34<=p.y+p.h+18&&player.vy>=0){player.y=p.y-34;player.vy=0;player.ground=true}}if(player.y>H+180){player.x=20;player.y=340;player.vx=0;player.vy=0}player.ang=player.ground?player.vx*.025:player.ang*.9;player.squash=Math.max(0,player.squash-.07);gems.forEach((g,i)=>{if(!g.taken&&Math.hypot(player.x-g.x,player.y-g.y)<43){g.taken=true;world.score++;document.querySelector('#score').textContent=world.score;showToast(world.score===8?'Last star found!':'Nicely squished!')}});if(world.score>=8&&!world.won&&player.x>2760){world.won=true;document.querySelector('#finishText').textContent=`${player.name} found all 8 clay stars!`;document.querySelector('#finish').classList.add('show')}
+let target=player.x-W*.36;world.cam+=(target-world.cam)*.08;world.cam=Math.max(0,Math.min(world.cam,2600-W));}
+function showToast(t){let el=document.querySelector('#toast');el.textContent=t;el.classList.add('show');clearTimeout(showToast.t);showToast.t=setTimeout(()=>el.classList.remove('show'),900)}
+function loop(){drawBackground();for(const p of platforms)grassPlatform(p);gems.forEach(gem);textBlob();physics();requestAnimationFrame(loop)}loop();
+function begin(){const raw=document.querySelector('#word').value.trim();player.name=(raw.replace(/[^a-z0-9]/gi,'').slice(0,10)||'BLOB').toUpperUpperCase();document.querySelector('#name').textContent=player.name;document.querySelector('#creator').classList.add('hide');document.querySelector('#hud').classList.add('show');world.start=true;canvas.focus()}
+document.querySelector('#play').onclick=begin;document.querySelector('#word').addEventListener('keydown',e=>{if(e.key==='Enter')begin()});document.querySelector('#again').onclick=()=>location.reload();
+function bind(id,key){const el=document.querySelector('#'+id);el.addPointerCapture?.(1);el.addEventListener('pointerdown',e=>{e.preventDefault();keys[key]=true});el.addEventListener('pointerup',e=>{e.preventDefault();keys[key]=false});el.addEventListener('pointercancel',()=>keys[key]=false)}bind('left','arrowleft');bind('right','arrowright');bind('jump',' ');
+</script>
+</body>
+</html>
